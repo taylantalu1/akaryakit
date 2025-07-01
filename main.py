@@ -7,18 +7,20 @@ app = Flask(__name__)
 @app.route("/akaryakit", methods=["GET"])
 def get_akaryakit():
     try:
-        # Dosya mevcut mu kontrol et
+        # Dosya var mı kontrol et
         if not os.path.exists("tum_akaryakit.json"):
             return jsonify({"error": "Veri dosyası bulunamadı"}), 404
-        
+
         # Dosyayı oku
         with open("tum_akaryakit.json", "r", encoding="utf-8") as file:
-            data = json.load(file)
+            content = file.read().strip()
+            if not content:
+                return jsonify({"error": "Dosya boş"}), 500
+            data = json.loads(content)
 
-        # JSON olarak dön
         return jsonify(data)
     except Exception as e:
-        return jsonify({"error": f"Hata oluştu: {str(e)}"}), 500
+        return jsonify({"error": f"Hata: {str(e)}"}), 500
 
 @app.route("/", methods=["GET"])
 def home():
