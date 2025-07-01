@@ -1,13 +1,24 @@
 from flask import Flask, jsonify
 import json
+import os
 
 app = Flask(__name__)
 
 @app.route("/akaryakit", methods=["GET"])
 def get_akaryakit():
-    with open("tum_akaryakit.json", "r", encoding="utf-8") as file:
-        data = json.load(file)
-    return jsonify(data)
+    try:
+        # Dosya mevcut mu kontrol et
+        if not os.path.exists("tum_akaryakit.json"):
+            return jsonify({"error": "Veri dosyası bulunamadı"}), 404
+        
+        # Dosyayı oku
+        with open("tum_akaryakit.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        # JSON olarak dön
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": f"Hata oluştu: {str(e)}"}), 500
 
 @app.route("/", methods=["GET"])
 def home():
